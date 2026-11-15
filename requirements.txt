@@ -1,0 +1,6 @@
+# Python tooling for local visual QA (the website itself is Node/Next.js — see package.json).
+#   python -m venv .venv
+#   .venv\Scripts\python -m pip install -r requirements.txt   (Windows)
+#   .venv/bin/python -m pip install -r requirements.txt       (macOS/Linux)
+#   python -m playwright install chromium
+playwright==1.64.1

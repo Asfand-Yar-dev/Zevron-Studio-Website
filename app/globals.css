@@ -1,0 +1,128 @@
+@import "tailwindcss" source(none);
+@source "../app";
+@source "../components";
+@source "../lib";
+
+/* Strict brand palette — Tailwind's default colors are removed on purpose. */
+@theme {
+  --color-*: initial;
+  --color-black: #000000;
+  --color-white: #f5f5f5;
+  --color-signal: #ea6506;
+  --color-cyan: #00d4ff;
+  --color-silver: #c7cdd4;
+  --color-surface: #101010;
+  --color-elevated: #171717;
+  --color-line: #292929;
+  --color-muted: #9299a1;
+
+  --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+
+  --ease-precise: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html {
+    background: var(--color-black);
+    color: var(--color-white);
+    color-scheme: dark;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--color-black);
+    font-family: var(--font-sans);
+    overflow-x: clip;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  section[id] {
+    scroll-margin-top: 5rem;
+  }
+
+  ::selection {
+    background: var(--color-signal);
+    color: var(--color-black);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-cyan);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Silver metallic type — built only from palette tones. */
+  .text-metal {
+    background: linear-gradient(180deg, #f5f5f5 0%, #c7cdd4 55%, #9299a1 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .text-outline {
+    color: transparent;
+    -webkit-text-stroke: 1px rgb(146 153 161 / 0.38);
+  }
+
+  /* Engineering grid used as a quiet backdrop. */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, rgb(41 41 41 / 0.55) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(41 41 41 / 0.55) 1px, transparent 1px);
+    background-size: 80px 80px;
+  }
+
+  .chamfer {
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  }
+
+  /* Hollow 1px outline of .chamfer — lets a translucent surface show what's behind it. */
+  .chamfer-frame {
+    clip-path: polygon(
+      10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px, 10px 0,
+      10.41px 1px, 1px 10.41px, 1px calc(100% - 1px), calc(100% - 10.41px) calc(100% - 1px),
+      calc(100% - 1px) calc(100% - 10.41px), calc(100% - 1px) 1px, 10.41px 1px
+    );
+  }
+
+  .chamfer-lg {
+    clip-path: polygon(22px 0, 100% 0, 100% calc(100% - 22px), calc(100% - 22px) 100%, 0 100%, 0 22px);
+  }
+
+  .label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  /* SVG groups that transform around their own box on hover. */
+  .svg-part {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition:
+      transform 600ms var(--ease-precise),
+      translate 600ms var(--ease-precise),
+      fill 400ms ease,
+      stroke 400ms ease,
+      opacity 400ms ease;
+  }
+}
