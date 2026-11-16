@@ -324,7 +324,7 @@ export const TEAM: TeamMember[] = [
     roleShort: "CEO",
     bio: "Leads Zevron Studio setting the company's direction, building client partnerships and making sure every engagement turns complex challenges into practical, lasting results.",
     focus: ["Company direction", "Client partnerships", "Delivery & growth"],
-    photo: "/team/ceo.webp",
+    photo: "/team/ceo-balach.webp",
     cta: "Start a Conversation",
   },
   {
