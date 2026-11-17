@@ -10,6 +10,10 @@ const nextConfig: NextConfig = {
     "*.ngrok.app",
     "192.168.*.*", // devices on the same Wi-Fi, e.g. http://192.168.100.32:3000
   ],
+  // Next.js 16 only allows quality 75 by default; team portraits use 90 so faces stay sharp.
+  images: {
+    qualities: [75, 90],
+  },
 };
 
 export default nextConfig;

@@ -41,6 +41,7 @@ function Member({ member, index }: { member: TeamMember; index: number }) {
             src={member.photo}
             alt={`${member.name}, ${member.role} at Zevron Studio`}
             fill
+            quality={90}
             sizes="(min-width: 1024px) 40vw, 100vw"
             className="object-cover object-[50%_22%] transition-transform duration-700 ease-precise group-hover/portrait:scale-[1.03]"
           />
