@@ -280,7 +280,7 @@
   }
 
   /* Smooth page reveal: content underneath fades in and gently scales up
-     as the intro panels split open, for a polished transition. */
+     as the intro panels split open ONLY on first visit while intro is active. */
   @keyframes intro-page-reveal {
     from {
       opacity: 0;
@@ -291,16 +291,11 @@
       transform: scale(1);
     }
   }
-  body > *:not(.intro):not(header):not(script):not([hidden]) {
+  body.intro-active > *:not(.intro):not(header):not(script):not([hidden]) {
     animation: intro-page-reveal 800ms cubic-bezier(0.22, 1, 0.36, 1) 2s both;
   }
-  html[data-intro="seen"] body > *:not(.intro):not(header):not(script):not([hidden]),
-  .intro-skip ~ *,
-  .intro-skipped > *:not(.intro) {
-    animation: none;
-  }
   @media (prefers-reduced-motion: reduce) {
-    body > *:not(.intro):not(header):not(script):not([hidden]) {
+    body.intro-active > *:not(.intro):not(header):not(script):not([hidden]) {
       animation: none;
     }
   }
