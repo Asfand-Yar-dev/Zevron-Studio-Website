@@ -23,22 +23,31 @@ export function IntroLoader() {
   const [state, setState] = useState<"play" | "skip" | "gone">("play");
 
   useEffect(() => {
-    if (state === "gone") return;
+    if (state === "gone") {
+      document.body.classList.remove("intro-active");
+      return;
+    }
+    if (state === "play") {
+      document.body.classList.add("intro-active");
+    }
     if (state === "skip") {
-      // Cancel the page-reveal animation so content appears instantly on skip.
-      document.body.classList.add("intro-skipped");
+      document.body.classList.remove("intro-active");
       const t = setTimeout(() => setState("gone"), 220);
       return () => clearTimeout(t);
     }
     const seen = document.documentElement.dataset.intro === "seen";
     if (seen || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      document.body.classList.remove("intro-active");
       setState("gone");
       return;
     }
     const skip = () => setState("skip");
     SKIP_EVENTS.forEach((e) => window.addEventListener(e, skip, { passive: true }));
     // Measured from hydration, so this always lands after the CSS has already finished.
-    const t = setTimeout(() => setState("gone"), INTRO_MS + 100);
+    const t = setTimeout(() => {
+      document.body.classList.remove("intro-active");
+      setState("gone");
+    }, INTRO_MS + 100);
     return () => {
       clearTimeout(t);
       SKIP_EVENTS.forEach((e) => window.removeEventListener(e, skip));
