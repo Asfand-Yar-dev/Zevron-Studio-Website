@@ -3,6 +3,8 @@ import { IBM_Plex_Mono, Inter, Space_Grotesk } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { ScrollManager } from "@/components/nav/ScrollManager";
+import { IntroLoader } from "@/components/intro/IntroLoader";
+import { INTRO_SCRIPT } from "@/components/intro/introScript";
 
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space-grotesk", display: "swap" });
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
@@ -18,7 +20,7 @@ const description =
 
 export const metadata: Metadata = {
   title: {
-    default: "Zevron Studio — Technology & AI Engineering",
+    default: "Zevron Studio ",
     template: "%s — Zevron Studio",
   },
   description,
@@ -55,8 +57,13 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     // No data-scroll-behavior on purpose: page changes keep the smooth scroll-to-top.
     // (Next.js logs a dev-only note about this; it is expected.)
-    <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable} ${plexMono.variable}`}>
+    // suppressHydrationWarning: INTRO_SCRIPT may add data-intro to <html> before React hydrates.
+    <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable} ${plexMono.variable}`} suppressHydrationWarning>
       <body>
+        {/* Must run before the first paint (next/script runs too late for that). Inlined as raw HTML
+            so the browser executes it while parsing, and React never creates a <script> element. */}
+        <div hidden dangerouslySetInnerHTML={{ __html: `<script>${INTRO_SCRIPT}</script>` }} />
+        <IntroLoader />
         {/* Runs before hydration: opening or refreshing the site always starts at the top. */}
         <Script id="scroll-restoration" strategy="beforeInteractive">
           {`history.scrollRestoration="manual";`}

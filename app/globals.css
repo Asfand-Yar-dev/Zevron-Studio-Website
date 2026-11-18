@@ -114,6 +114,197 @@
     text-transform: uppercase;
   }
 
+  /* ---------- Intro loader (components/intro/IntroLoader.tsx) ----------
+     Timeline (2.45s total — keep INTRO_MS in sync):
+     0.00–0.55 mark draws · 0.40–0.70 mark fills · 0.30–0.85 wordmark reveals
+     1.85–2.05 content fades + orange seam shoots across · 2.00–2.45 screen splits open. */
+  .intro {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    animation: intro-end 0s linear 2.45s forwards;
+  }
+  .intro.intro-skip {
+    animation: intro-skip 200ms ease forwards;
+  }
+  html[data-intro="seen"] .intro {
+    display: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .intro {
+      display: none;
+    }
+  }
+
+  .intro-panel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 50.5%;
+    background: var(--color-black);
+    will-change: transform;
+    /* Longhands on purpose: a shorthand without a name gets minified to "animation: none". */
+    animation-duration: 550ms;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    animation-delay: 2s;
+    animation-fill-mode: forwards;
+  }
+  .intro-panel-top {
+    top: 0;
+    animation-name: intro-open-up;
+  }
+  .intro-panel-bottom {
+    bottom: 0;
+    animation-name: intro-open-down;
+  }
+
+
+  /* Cyber ambience radial glow */
+  .intro-glow {
+    background: radial-gradient(circle, rgba(234, 101, 6, 0.18) 0%, rgba(234, 101, 6, 0.04) 50%, transparent 70%);
+    filter: blur(40px);
+    opacity: 0;
+    animation: intro-glow-pulse 1.6s ease 0.1s forwards;
+  }
+
+  .intro-content {
+    position: relative;
+    padding: 2.2rem 3rem;
+    will-change: opacity, transform;
+    animation: intro-content-out 320ms cubic-bezier(0.22, 1, 0.36, 1) 1.88s forwards;
+  }
+
+  /* Framing futuristic tech corner brackets */
+  .intro-corner {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-color: rgba(234, 101, 6, 0.45);
+    opacity: 0;
+    animation: intro-corner-fade 500ms ease 0.2s forwards;
+  }
+  .intro-corner-tl { top: 0; left: 0; border-top: 1.5px solid; border-left: 1.5px solid; }
+  .intro-corner-tr { top: 0; right: 0; border-top: 1.5px solid; border-right: 1.5px solid; }
+  .intro-corner-bl { bottom: 0; left: 0; border-bottom: 1.5px solid; border-left: 1.5px solid; }
+  .intro-corner-br { bottom: 0; right: 0; border-bottom: 1.5px solid; border-right: 1.5px solid; }
+
+  /* Individual letter kinetic 3D entrance */
+  .intro-char {
+    opacity: 0;
+    transform: translateY(35px) scale(0.85) rotateX(25deg);
+    background: linear-gradient(180deg, #FFFFFF 0%, #FFA858 45%, #EA6506 85%, #B74900 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 25px rgba(234, 101, 6, 0.35));
+    will-change: transform, opacity, filter;
+    animation: intro-char-reveal 650ms cubic-bezier(0.2, 1, 0.3, 1) forwards;
+  }
+
+  .intro-sub-wrap {
+    opacity: 0;
+    transform: translateY(12px);
+    animation: intro-sub-in 500ms cubic-bezier(0.16, 1, 0.3, 1) 0.65s forwards;
+  }
+
+  .intro-sub {
+    font-family: var(--font-display) !important;
+    text-shadow: 0 0 16px rgba(255, 255, 255, 0.15);
+  }
+
+  @keyframes intro-glow-pulse {
+    0% { opacity: 0; transform: scale(0.6); }
+    50% { opacity: 1; transform: scale(1.15); }
+    100% { opacity: 0.8; transform: scale(1); }
+  }
+
+  @keyframes intro-corner-fade {
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes intro-char-reveal {
+    0% {
+      opacity: 0;
+      transform: translateY(35px) scale(0.85) rotateX(25deg);
+      filter: blur(10px) drop-shadow(0 0 35px rgba(234, 101, 6, 0.8));
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1) rotateX(0deg);
+      filter: blur(0px) drop-shadow(0 0 20px rgba(234, 101, 6, 0.3));
+    }
+  }
+
+  @keyframes intro-sub-in {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes intro-content-out {
+    to {
+      opacity: 0;
+      transform: scale(0.97);
+    }
+  }
+
+  @keyframes intro-fade {
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes intro-open-up {
+    to {
+      transform: translateY(-101%);
+    }
+  }
+  @keyframes intro-open-down {
+    to {
+      transform: translateY(101%);
+    }
+  }
+  @keyframes intro-end {
+    to {
+      visibility: hidden;
+    }
+  }
+  @keyframes intro-skip {
+    to {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+
+  /* Smooth page reveal: content underneath fades in and gently scales up
+     as the intro panels split open, for a polished transition. */
+  @keyframes intro-page-reveal {
+    from {
+      opacity: 0;
+      transform: scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  body > *:not(.intro):not(header):not(script):not([hidden]) {
+    animation: intro-page-reveal 800ms cubic-bezier(0.22, 1, 0.36, 1) 2s both;
+  }
+  html[data-intro="seen"] body > *:not(.intro):not(header):not(script):not([hidden]),
+  .intro-skip ~ *,
+  .intro-skipped > *:not(.intro) {
+    animation: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    body > *:not(.intro):not(header):not(script):not([hidden]) {
+      animation: none;
+    }
+  }
+
   /* SVG groups that transform around their own box on hover. */
   .svg-part {
     transform-box: fill-box;

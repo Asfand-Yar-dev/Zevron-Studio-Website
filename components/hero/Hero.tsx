@@ -1,10 +1,38 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { LogoMark } from "@/components/brand/Logo";
 import { ButtonLink } from "@/components/ui/Button";
 import { CONTACT_PATH } from "@/lib/content";
 import { HeroVisual } from "./HeroVisual";
+
+// The live 3D scene only runs on desktop (lg+). Phones/tablets get a still render of the same
+// model (public/hero/zevron-3d-mobile.webp), so they never download or run Three.js.
+const DESKTOP_QUERY = "(min-width: 1024px)";
+
+/** True once the page is idle on a desktop-sized screen; follows later resizes immediately. */
+function useDesktop3D() {
+  const [enabled, setEnabled] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia(DESKTOP_QUERY);
+    const update = () => setEnabled(mq.matches);
+    // Let the headline and buttons render first; start the 3D work when the browser is idle.
+    const start = () => {
+      // Safari has no requestIdleCallback; a short timeout does the same job there.
+      if (typeof window.requestIdleCallback === "function") window.requestIdleCallback(update, { timeout: 1500 });
+      else setTimeout(update, 300);
+    };
+    if (document.readyState === "complete") start();
+    else window.addEventListener("load", start, { once: true });
+    mq.addEventListener("change", update);
+    return () => {
+      window.removeEventListener("load", start);
+      mq.removeEventListener("change", update);
+    };
+  }, []);
+  return enabled;
+}
 
 
 function CropMark({ className }: { className: string }) {
@@ -16,6 +44,7 @@ export function Hero() {
   const [scene, setScene] = useState<"loading" | "ready" | "fallback">("loading");
   const onReady = useCallback(() => setScene("ready"), []);
   const onFail = useCallback(() => setScene("fallback"), []);
+  const desktop3D = useDesktop3D();
 
   return (
     <section id="home" aria-labelledby="hero-title" className="relative isolate flex min-h-[100svh] flex-col overflow-hidden bg-black">
@@ -26,7 +55,7 @@ export function Hero() {
         <div className="absolute -bottom-[10vmin] left-1/2 h-[30vmin] w-[90vmin] -translate-x-1/2 rounded-full bg-signal/[0.09] blur-[110px]" />
       </div>
 
-      {scene !== "fallback" && (
+      {desktop3D && scene !== "fallback" && (
         <div className="absolute inset-0 -z-10">
           <HeroVisual ready={scene === "ready"} onReady={onReady} onFail={onFail} anchorRef={anchorRef} />
         </div>
@@ -57,9 +86,22 @@ export function Hero() {
             <span
               ref={anchorRef}
               aria-hidden
-              className="order-last flex h-[min(80vw,30rem)] basis-full items-center justify-center lg:order-none lg:h-[1.7em] lg:min-w-[2.2em] lg:flex-1 lg:basis-auto lg:-translate-y-[0.08em]"
+              className="relative order-last flex h-[min(80vw,30rem)] basis-full items-center justify-center lg:order-none lg:h-[1.7em] lg:min-w-[2.2em] lg:flex-1 lg:basis-auto lg:-translate-y-[0.08em]"
             >
-              {scene === "fallback" && <LogoMark className="h-[80%] w-auto" />}
+              {/* Mobile/tablet: still render of the 3D model, placed exactly where the live scene puts it
+                  (model centre at 42.25% / 52.23% of the image; image is 129.27% of this box's height). */}
+              <Image
+                src="/hero/zevron-3d-mobile.webp"
+                alt=""
+                width={1013}
+                height={1210}
+                quality={90}
+                loading="eager"
+                fetchPriority="high"
+                sizes="(min-width: 640px) 560px, 340px"
+                className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[129.27%] w-auto max-w-none -translate-x-[42.25%] -translate-y-[52.23%] [mask-image:linear-gradient(to_right,black_82%,transparent)] lg:hidden"
+              />
+              {desktop3D && scene === "fallback" && <LogoMark className="h-[80%] w-auto" />}
             </span>
             <span>what</span>
           </span>

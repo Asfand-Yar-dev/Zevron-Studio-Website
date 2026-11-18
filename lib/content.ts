@@ -324,7 +324,7 @@ export const TEAM: TeamMember[] = [
     roleShort: "CEO",
     bio: "Leads Zevron Studio setting the company's direction, building client partnerships and making sure every engagement turns complex challenges into practical, lasting results.",
     focus: ["Company direction", "Client partnerships", "Delivery & growth"],
-    photo: "/team/ceo-balach.webp",
+    photo: "/team/CEO-Balach.webp",
     cta: "Start a Conversation",
   },
   {
@@ -333,7 +333,7 @@ export const TEAM: TeamMember[] = [
     roleShort: "Co-Founder & CTO",
     bio: "Leads engineering at Zevron Studio setting the technical direction, shaping system architecture and holding every build to the same standard of speed, structure and scale.",
     focus: ["System architecture", "AI & agentic systems", "Engineering standards"],
-    photo: "/team/cto.webp",
+    photo: "/team/CTO-Asfand_Yar.webp",
     cta: "Talk Engineering With Us",
   },
 ];
